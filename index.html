@@ -255,7 +255,12 @@ const LAND={
  "押上":["🗼","スカイツリー"],"舞浜":["🏰","ディズニー"],"羽田空港":["✈️","くうこう"],
  "上野":["🐼","どうぶつえん"],"浅草":["⛩️","かみなりもん"],"東京":["🚄","しんかんせん"],
  "横浜":["⚓","みなとまち"],"両国":["🥋","おすもう"],"後楽園":["🎢","ゆうえんち"],
- "渋谷":["🐕","ハチこう"]
+ "渋谷":["🐕","ハチこう"],"秋葉原":["🤖","でんきがい"],"新宿":["🏙️","とちょう"],
+ "池袋":["🦉","ふくろうの まち"],"品川":["🐬","すいぞくかん"],"大手町":["🏯","こうきょ"],
+ "銀座":["🛍️","おかいもの"],"豊洲":["🐟","おさかな いちば"],"明治神宮前":["⛩️","めいじじんぐう"],
+ "東京テレポート":["🎡","おだいば"],"国会議事堂前":["🏛️","こっかい"],"三鷹":["🎬","ジブリびじゅつかん"],
+ "神保町":["📚","ほんの まち"],"浜松町":["🗼","とうきょうタワー"],"月島":["🍢","もんじゃ"],
+ "目黒":["🌸","おはなみ"],"飯田橋":["🎣","つりぼり"],"水道橋":["⚾","やきゅう"]
 };
 
 /* ===== 路線（公式ラインカラー） ===== */
@@ -269,20 +274,21 @@ const LINES = [
  {n:"JR横須賀線",g:"jr",c:"#1069B4",s:["東京","新橋","品川","武蔵小杉","横浜"]},
  {n:"JR京葉線",g:"jr",c:"#D6262C",s:["東京","新木場","舞浜"]},
 
- {n:"銀座線",g:"metro",c:"#FF9500",s:["渋谷","表参道","青山一丁目","赤坂見附","虎ノ門","新橋","銀座","日本橋","三越前","神田","上野広小路","上野","田原町","浅草"]},
- {n:"丸ノ内線",g:"metro",c:"#E60012",s:["荻窪","中野坂上","新宿","新宿三丁目","四ツ谷","赤坂見附","国会議事堂前","霞ケ関","銀座","東京","大手町","御茶ノ水","後楽園","池袋"]},
- {n:"日比谷線",g:"metro",c:"#B5B5AC",s:["中目黒","恵比寿","広尾","六本木","霞ケ関","日比谷","銀座","東銀座","八丁堀","茅場町","人形町","秋葉原","上野","南千住","北千住"]},
- {n:"東西線",g:"metro",c:"#009BBF",s:["中野","高田馬場","早稲田","飯田橋","九段下","大手町","日本橋","茅場町","門前仲町","東陽町","西葛西","浦安","西船橋"]},
- {n:"千代田線",g:"metro",c:"#00BB85",s:["代々木上原","明治神宮前","表参道","国会議事堂前","霞ケ関","日比谷","大手町","西日暮里","町屋","北千住","綾瀬"]},
- {n:"有楽町線",g:"metro",c:"#C1A470",s:["小竹向原","池袋","飯田橋","市ヶ谷","有楽町","月島","豊洲","新木場"]},
- {n:"半蔵門線",g:"metro",c:"#8F76D6",s:["渋谷","表参道","青山一丁目","永田町","半蔵門","九段下","神保町","大手町","三越前","清澄白河","住吉","錦糸町","押上"]},
- {n:"南北線",g:"metro",c:"#00AC9B",s:["目黒","白金高輪","麻布十番","永田町","四ツ谷","市ヶ谷","飯田橋","後楽園","駒込","王子"]},
- {n:"副都心線",g:"metro",c:"#9C5E31",s:["小竹向原","池袋","東新宿","新宿三丁目","明治神宮前","渋谷"]},
+ {n:"銀座線",g:"metro",c:"#FF9500",s:["渋谷","表参道","外苑前","青山一丁目","赤坂見附","溜池山王","虎ノ門","新橋","銀座","京橋","日本橋","三越前","神田","末広町","上野広小路","上野","稲荷町","田原町","浅草"]},
+ {n:"丸ノ内線",g:"metro",c:"#E60012",s:["荻窪","南阿佐ケ谷","新高円寺","東高円寺","新中野","中野坂上","西新宿","新宿","新宿三丁目","新宿御苑前","四谷三丁目","四ツ谷","赤坂見附","国会議事堂前","霞ケ関","銀座","東京","大手町","淡路町","御茶ノ水","本郷三丁目","後楽園","茗荷谷","新大塚","池袋"]},
+ {n:"丸ノ内線 方南町支線",g:"metro",c:"#E60012",s:["中野坂上","中野新橋","中野富士見町","方南町"]},
+ {n:"日比谷線",g:"metro",c:"#B5B5AC",s:["中目黒","恵比寿","広尾","六本木","神谷町","虎ノ門ヒルズ","霞ケ関","日比谷","銀座","東銀座","築地","八丁堀","茅場町","人形町","小伝馬町","秋葉原","仲御徒町","上野","入谷","三ノ輪","南千住","北千住"]},
+ {n:"東西線",g:"metro",c:"#009BBF",s:["中野","落合","高田馬場","早稲田","神楽坂","飯田橋","九段下","竹橋","大手町","日本橋","茅場町","門前仲町","木場","東陽町","南砂町","西葛西","葛西","浦安","南行徳","行徳","妙典","原木中山","西船橋"]},
+ {n:"千代田線",g:"metro",c:"#00BB85",s:["代々木上原","代々木公園","明治神宮前","表参道","乃木坂","赤坂","国会議事堂前","霞ケ関","日比谷","二重橋前","大手町","新御茶ノ水","湯島","根津","千駄木","西日暮里","町屋","北千住","綾瀬","北綾瀬"]},
+ {n:"有楽町線",g:"metro",c:"#C1A470",s:["和光市","地下鉄成増","地下鉄赤塚","平和台","氷川台","小竹向原","千川","要町","池袋","東池袋","護国寺","江戸川橋","飯田橋","市ヶ谷","麹町","永田町","桜田門","有楽町","銀座一丁目","新富町","月島","豊洲","辰巳","新木場"]},
+ {n:"半蔵門線",g:"metro",c:"#8F76D6",s:["渋谷","表参道","青山一丁目","永田町","半蔵門","九段下","神保町","大手町","三越前","水天宮前","清澄白河","住吉","錦糸町","押上"]},
+ {n:"南北線",g:"metro",c:"#00AC9B",s:["目黒","白金台","白金高輪","麻布十番","六本木一丁目","溜池山王","永田町","四ツ谷","市ヶ谷","飯田橋","後楽園","東大前","本駒込","駒込","西ケ原","王子","王子神谷","志茂","赤羽岩淵"]},
+ {n:"副都心線",g:"metro",c:"#9C5E31",s:["和光市","地下鉄成増","地下鉄赤塚","平和台","氷川台","小竹向原","千川","要町","池袋","雑司が谷","西早稲田","東新宿","新宿三丁目","北参道","明治神宮前","渋谷"]},
 
- {n:"都営浅草線",g:"toei",c:"#E85298",s:["泉岳寺","三田","大門","新橋","東銀座","日本橋","人形町","浅草橋","蔵前","浅草","押上"]},
- {n:"都営三田線",g:"toei",c:"#0079C2",s:["目黒","白金高輪","三田","日比谷","大手町","神保町","水道橋","春日","巣鴨"]},
- {n:"都営新宿線",g:"toei",c:"#6CBB5A",s:["新宿","新宿三丁目","市ヶ谷","九段下","神保町","森下","住吉"]},
- {n:"都営大江戸線",g:"toei",c:"#B6007A",s:["都庁前","東新宿","飯田橋","春日","新御徒町","蔵前","両国","森下","清澄白河","門前仲町","月島","勝どき","汐留","大門","麻布十番","六本木","青山一丁目","代々木","新宿","都庁前","中野坂上","東中野","練馬","光が丘"]},
+ {n:"都営浅草線",g:"toei",c:"#E85298",s:["西馬込","馬込","中延","戸越","五反田","高輪台","泉岳寺","三田","大門","新橋","東銀座","宝町","日本橋","人形町","東日本橋","浅草橋","蔵前","浅草","本所吾妻橋","押上"]},
+ {n:"都営三田線",g:"toei",c:"#0079C2",s:["目黒","白金台","白金高輪","三田","芝公園","御成門","内幸町","日比谷","大手町","神保町","水道橋","春日","白山","千石","巣鴨","西巣鴨","新板橋","板橋区役所前","板橋本町","本蓮沼","志村坂上","志村三丁目","蓮根","西台","高島平","新高島平","西高島平"]},
+ {n:"都営新宿線",g:"toei",c:"#6CBB5A",s:["新宿","新宿三丁目","曙橋","市ヶ谷","九段下","神保町","小川町","岩本町","馬喰横山","浜町","森下","菊川","住吉","西大島","大島","東大島","船堀","一之江","瑞江","篠崎","本八幡"]},
+ {n:"都営大江戸線",g:"toei",c:"#B6007A",s:["都庁前","新宿西口","東新宿","若松河田","牛込柳町","牛込神楽坂","飯田橋","春日","本郷三丁目","上野御徒町","新御徒町","蔵前","両国","森下","清澄白河","門前仲町","月島","勝どき","築地市場","汐留","大門","赤羽橋","麻布十番","六本木","青山一丁目","国立競技場","代々木","新宿","都庁前","西新宿五丁目","中野坂上","東中野","中井","落合南長崎","新江古田","練馬","豊島園","練馬春日町","光が丘"]},
 
  {n:"東急東横線",g:"priv",c:"#E8334A",s:["渋谷","代官山","中目黒","自由が丘","田園調布","武蔵小杉","日吉","横浜"]},
  {n:"東急田園都市線",g:"priv",c:"#20A288",s:["渋谷","三軒茶屋","二子玉川","溝の口"]},
@@ -306,9 +312,90 @@ const GROUPS=[
  {id:"priv",label:"してつ",c:"#DD0077"}
 ];
 
+/* ===== 地形（海・川・都道府県）※おおよその かたち ===== */
+const BAY=[[139.78,35.53],[139.80,35.57],[139.80,35.61],[139.82,35.63],[139.85,35.64],[139.89,35.645],[139.905,35.635],[139.92,35.595],[139.92,35.47],[139.78,35.47]];
+const RIVERS=[
+ {n:"多摩川",pts:[[139.46,35.66],[139.55,35.625],[139.626,35.611],[139.659,35.576],[139.70,35.55],[139.785,35.535]]},
+ {n:"荒川",pts:[[139.62,35.81],[139.70,35.785],[139.74,35.755],[139.79,35.715],[139.83,35.665],[139.85,35.645]]},
+ {n:"江戸川",pts:[[139.85,35.82],[139.885,35.775],[139.905,35.73],[139.91,35.70],[139.90,35.665],[139.89,35.638]]}
+];
+const PREFS=[
+ {n:"埼玉県",p:[139.60,35.805]},
+ {n:"千葉県",p:[139.905,35.755]},
+ {n:"神奈川県",p:[139.605,35.515]},
+ {n:"東京都",p:[139.555,35.695]}
+];
+
 /* ===== 投影 ===== */
 const LON0=139.74,LAT0=35.68,COS=Math.cos(LAT0*Math.PI/180);
 function proj(lon,lat){return[(lon-LON0)*COS,-(lat-LAT0)];}
+
+/* ===== 地下鉄 全駅の追加（メトロ9＋都営4）[経度,緯度,よみ] ===== */
+const NEW={
+ "外苑前":[139.718,35.670,"がいえんまえ"],"溜池山王":[139.741,35.673,"ためいけさんのう"],
+ "京橋":[139.770,35.677,"きょうばし"],"末広町":[139.771,35.702,"すえひろちょう"],
+ "稲荷町":[139.784,35.711,"いなりちょう"],"新大塚":[139.730,35.726,"しんおおつか"],
+ "茗荷谷":[139.738,35.717,"みょうがだに"],"本郷三丁目":[139.760,35.707,"ほんごうさんちょうめ"],
+ "淡路町":[139.767,35.694,"あわじちょう"],"四谷三丁目":[139.720,35.688,"よつやさんちょうめ"],
+ "新宿御苑前":[139.711,35.689,"しんじゅくぎょえんまえ"],"西新宿":[139.694,35.694,"にししんじゅく"],
+ "新中野":[139.667,35.692,"しんなかの"],"東高円寺":[139.659,35.694,"ひがしこうえんじ"],
+ "新高円寺":[139.650,35.694,"しんこうえんじ"],"南阿佐ケ谷":[139.636,35.696,"みなみあさがや"],
+ "中野新橋":[139.677,35.690,"なかのしんばし"],"中野富士見町":[139.673,35.686,"なかのふじみちょう"],
+ "方南町":[139.664,35.681,"ほうなんちょう"],"神谷町":[139.745,35.663,"かみやちょう"],
+ "虎ノ門ヒルズ":[139.749,35.666,"とらのもんヒルズ"],"築地":[139.770,35.667,"つきじ"],
+ "小伝馬町":[139.779,35.691,"こでんまちょう"],"仲御徒町":[139.774,35.706,"なかおかちまち"],
+ "入谷":[139.785,35.719,"いりや"],"三ノ輪":[139.792,35.727,"みのわ"],
+ "落合":[139.690,35.708,"おちあい"],"神楽坂":[139.735,35.704,"かぐらざか"],
+ "竹橋":[139.758,35.690,"たけばし"],"木場":[139.807,35.669,"きば"],
+ "南砂町":[139.829,35.668,"みなみすなまち"],"葛西":[139.872,35.663,"かさい"],
+ "南行徳":[139.903,35.674,"みなみぎょうとく"],"行徳":[139.916,35.681,"ぎょうとく"],
+ "妙典":[139.918,35.692,"みょうでん"],"原木中山":[139.915,35.700,"ばらきなかやま"],
+ "代々木公園":[139.689,35.668,"よよぎこうえん"],"乃木坂":[139.726,35.666,"のぎざか"],
+ "赤坂":[139.737,35.672,"あかさか"],"二重橋前":[139.763,35.680,"にじゅうばしまえ"],
+ "新御茶ノ水":[139.765,35.697,"しんおちゃのみず"],"湯島":[139.770,35.707,"ゆしま"],
+ "根津":[139.766,35.717,"ねづ"],"千駄木":[139.760,35.725,"せんだぎ"],
+ "北綾瀬":[139.826,35.770,"きたあやせ"],"地下鉄成増":[139.633,35.776,"ちかてつなります"],
+ "地下鉄赤塚":[139.643,35.778,"ちかてつあかつか"],"平和台":[139.652,35.767,"へいわだい"],
+ "氷川台":[139.659,35.762,"ひかわだい"],"千川":[139.690,35.741,"せんかわ"],
+ "要町":[139.699,35.736,"かなめちょう"],"東池袋":[139.719,35.730,"ひがしいけぶくろ"],
+ "護国寺":[139.726,35.719,"ごこくじ"],"江戸川橋":[139.733,35.710,"えどがわばし"],
+ "麹町":[139.738,35.685,"こうじまち"],"桜田門":[139.752,35.679,"さくらだもん"],
+ "銀座一丁目":[139.768,35.674,"ぎんざいっちょうめ"],"新富町":[139.773,35.671,"しんとみちょう"],
+ "辰巳":[139.808,35.647,"たつみ"],"水天宮前":[139.787,35.683,"すいてんぐうまえ"],
+ "白金台":[139.726,35.637,"しろかねだい"],"六本木一丁目":[139.739,35.665,"ろっぽんぎいっちょうめ"],
+ "東大前":[139.758,35.717,"とうだいまえ"],"本駒込":[139.751,35.724,"ほんこまごめ"],
+ "西ケ原":[139.743,35.745,"にしがはら"],"王子神谷":[139.741,35.762,"おうじかみや"],
+ "志茂":[139.728,35.776,"しも"],"赤羽岩淵":[139.721,35.783,"あかばねいわぶち"],
+ "雑司が谷":[139.715,35.722,"ぞうしがや"],"西早稲田":[139.711,35.708,"にしわせだ"],
+ "北参道":[139.706,35.682,"きたさんどう"],"西馬込":[139.710,35.587,"にしまごめ"],
+ "馬込":[139.713,35.594,"まごめ"],"中延":[139.716,35.602,"なかのぶ"],
+ "戸越":[139.718,35.610,"とごし"],"高輪台":[139.730,35.633,"たかなわだい"],
+ "宝町":[139.772,35.674,"たからちょう"],"東日本橋":[139.785,35.692,"ひがしにほんばし"],
+ "本所吾妻橋":[139.804,35.710,"ほんじょあづまばし"],"芝公園":[139.749,35.655,"しばこうえん"],
+ "御成門":[139.751,35.661,"おなりもん"],"内幸町":[139.755,35.668,"うちさいわいちょう"],
+ "白山":[139.752,35.722,"はくさん"],"千石":[139.746,35.728,"せんごく"],
+ "西巣鴨":[139.733,35.740,"にしすがも"],"新板橋":[139.722,35.745,"しんいたばし"],
+ "板橋区役所前":[139.717,35.751,"いたばしくやくしょまえ"],"板橋本町":[139.708,35.759,"いたばしほんちょう"],
+ "本蓮沼":[139.703,35.765,"もとはすぬま"],"志村坂上":[139.698,35.772,"しむらさかうえ"],
+ "志村三丁目":[139.691,35.778,"しむらさんちょうめ"],"蓮根":[139.684,35.784,"はすね"],
+ "西台":[139.677,35.788,"にしだい"],"高島平":[139.665,35.792,"たかしまだいら"],
+ "新高島平":[139.656,35.793,"しんたかしまだいら"],"西高島平":[139.647,35.794,"にしたかしまだいら"],
+ "曙橋":[139.722,35.691,"あけぼのばし"],"小川町":[139.766,35.696,"おがわまち"],
+ "岩本町":[139.775,35.695,"いわもとちょう"],"馬喰横山":[139.785,35.692,"ばくろよこやま"],
+ "浜町":[139.790,35.687,"はまちょう"],"菊川":[139.807,35.688,"きくかわ"],
+ "西大島":[139.825,35.690,"にしおおじま"],"大島":[139.831,35.687,"おおじま"],
+ "東大島":[139.840,35.683,"ひがしおおじま"],"船堀":[139.854,35.683,"ふなぼり"],
+ "一之江":[139.872,35.685,"いちのえ"],"瑞江":[139.884,35.690,"みずえ"],
+ "篠崎":[139.897,35.697,"しのざき"],"本八幡":[139.928,35.720,"もとやわた"],
+ "新宿西口":[139.699,35.693,"しんじゅくにしぐち"],"若松河田":[139.717,35.696,"わかまつかわだ"],
+ "牛込柳町":[139.725,35.698,"うしごめやなぎちょう"],"牛込神楽坂":[139.732,35.701,"うしごめかぐらざか"],
+ "上野御徒町":[139.773,35.706,"うえのおかちまち"],"築地市場":[139.769,35.665,"つきじしじょう"],
+ "赤羽橋":[139.743,35.656,"あかばねばし"],"国立競技場":[139.715,35.679,"こくりつきょうぎじょう"],
+ "西新宿五丁目":[139.687,35.687,"にししんじゅくごちょうめ"],"中井":[139.690,35.717,"なかい"],
+ "落合南長崎":[139.685,35.724,"おちあいみなみながさき"],"新江古田":[139.673,35.731,"しんえごた"],
+ "豊島園":[139.648,35.743,"としまえん"],"練馬春日町":[139.638,35.752,"ねりまかすがちょう"]
+};
+for(const n in NEW){const v=NEW[n];S[n]=[v[0],v[1]];YOMI[n]=v[2];}
 
 const stations={};
 for(const name in S){const[lo,la]=S[name];const[wx,wy]=proj(lo,la);stations[name]={name,wx,wy,lines:[],deg:0};}
@@ -324,6 +411,9 @@ let DPR=Math.min(window.devicePixelRatio||1,2),CW=0,CH=0;
 const view={scale:1,cx:0,cy:0};
 const hidden={},hiddenGroup={};
 let fitScale=1,fitDone=false;
+let drawScheduled=false,interacting=false,interactTimer=null;
+function scheduleDraw(){if(drawScheduled)return;drawScheduled=true;requestAnimationFrame(()=>{drawScheduled=false;draw();});}
+function markInteract(){interacting=true;if(interactTimer)clearTimeout(interactTimer);interactTimer=setTimeout(()=>{interacting=false;scheduleDraw();},150);}
 
 function computeFit(){
   let minx=1e9,miny=1e9,maxx=-1e9,maxy=-1e9;
@@ -352,8 +442,31 @@ let _jp=null;function getJP(){if(!_jp)_jp=getComputedStyle(document.body).fontFa
 /* ===== 描画 ===== */
 let hoverSt=null,flashSt=null,flashUntil=0;
 
+function drawGeo(){
+  // 東京湾（うみ）
+  ctx.beginPath();
+  for(let i=0;i<BAY.length;i++){const[wx,wy]=proj(BAY[i][0],BAY[i][1]);const[sx,sy]=w2s(wx,wy);i?ctx.lineTo(sx,sy):ctx.moveTo(sx,sy);}
+  ctx.closePath();ctx.fillStyle="rgba(125,190,225,.30)";ctx.fill();
+  // かわ（多摩川・荒川・江戸川 ＝ おおよその けんざかい）
+  ctx.lineCap="round";ctx.lineJoin="round";
+  const rw=Math.max(2.5,Math.min(10,view.scale*0.0011));
+  ctx.strokeStyle="rgba(125,190,225,.6)";ctx.lineWidth=rw;
+  for(const rv of RIVERS){ctx.beginPath();for(let i=0;i<rv.pts.length;i++){const[wx,wy]=proj(rv.pts[i][0],rv.pts[i][1]);const[sx,sy]=w2s(wx,wy);i?ctx.lineTo(sx,sy):ctx.moveTo(sx,sy);}ctx.stroke();}
+  // 都道府県の なまえ（うすく）
+  ctx.textAlign="center";ctx.textBaseline="middle";
+  ctx.fillStyle="rgba(95,115,135,.26)";
+  const pf=Math.max(18,Math.min(46,view.scale*0.0042));
+  ctx.font="800 "+pf+"px "+getJP();
+  for(const p of PREFS){const[wx,wy]=proj(p.p[0],p.p[1]);const[sx,sy]=w2s(wx,wy);if(sx<-120||sx>CW+120||sy<-60||sy>CH+60)continue;ctx.fillText(p.n,sx,sy);}
+  // うみ・かわ の なまえ
+  ctx.fillStyle="rgba(70,140,180,.65)";ctx.font="700 12px "+getJP();
+  const[bx,by]=w2s.apply(null,proj(139.87,35.55));ctx.fillText("東京湾",bx,by);
+  for(const rv of RIVERS){const m=rv.pts[Math.floor(rv.pts.length/2)];const[wx,wy]=proj(m[0],m[1]);const[sx,sy]=w2s(wx,wy);ctx.fillText(rv.n,sx,sy-9);}
+}
+
 function draw(){
   ctx.clearRect(0,0,CW,CH);
+  drawGeo();
   const zoomR=view.scale/fitScale;
   const lw=Math.max(3,Math.min(9,view.scale*0.0011));
 
@@ -385,30 +498,16 @@ function draw(){
     }
   }
 
-  // ランドマークの えもじ（いつも みえる）
+  // ランドマークの アイコン（ちしき）。重なるときは省き、ズームで ぜんぶ でる
   const placed=[];
-  for(const st of stList){
-    if(!LAND[st.name]||!visLines(st).length)continue;
-    const[sx,sy]=w2s(st.wx,st.wy);
-    if(sx<14||sx>CW-14||sy<24||sy>CH-6)continue;
-    const ex=sx,ey=sy-rBase-16;
-    ctx.font="20px serif";ctx.textAlign="center";ctx.textBaseline="middle";
-    ctx.beginPath();ctx.arc(ex,ey,13,0,7);ctx.fillStyle="#fff";ctx.fill();
-    ctx.lineWidth=2;ctx.strokeStyle="rgba(120,140,170,.5)";ctx.stroke();
-    ctx.fillText(LAND[st.name][0],ex,ey+1);
-    placed.push({x:ex-13,y:ey-13,w:26,h:26});
-  }
-
-  // えきめい ＋ ふりがな（ズームで だんだん ふえる）
-  const budget=Math.max(8,Math.round(8*Math.pow(zoomR,1.4)));
-  let count=0;
-  for(const st of stList){
-    if(count>=budget&&st!==flashSt&&st!==hoverSt)break;
-    const vis=visLines(st);if(!vis.length)continue;
-    const[sx,sy]=w2s(st.wx,st.wy);
-    if(sx<10||sx>CW-10||sy<24||sy>CH-8)continue;
+  function overlaps(b){for(const p of placed){if(b.x<p.x+p.w&&b.x+b.w>p.x&&b.y<p.y+p.h&&b.y+b.h>p.y)return true;}return false;}
+  const named=new Set();
+  function placeName(st,force){
+    const vis=visLines(st);if(!vis.length)return false;
     const major=st.deg>=4,land=!!LAND[st.name];
-    const fs=major||land?15:13;
+    const[sx,sy]=w2s(st.wx,st.wy);
+    if(sx<10||sx>CW-10||sy<24||sy>CH-8)return false;
+    const fs=(major||land)?15:13;
     const furiFs=Math.max(9,Math.round(fs*0.62));
     ctx.font=(major?"800 ":"700 ")+fs+'px '+getJP();
     const tw=ctx.measureText(st.name).width;
@@ -422,13 +521,50 @@ function draw(){
       let bx=cd.a==="left"?cd.x:cd.a==="right"?cd.x-boxW:cd.x-boxW/2;
       const box={x:bx-3,y:sy-fs/2-furiFs-4,w:boxW+6,h:fs+furiFs+8};
       if(box.x<3||box.x+box.w>CW-3)continue;
-      let hit=false;for(const p of placed){if(box.x<p.x+p.w&&box.x+box.w>p.x&&box.y<p.y+p.h&&box.y+box.h>p.y){hit=true;break;}}
-      if(!hit){pick={cd,box};break;}
+      if(!overlaps(box)){pick={cd,box};break;}
     }
-    if(!pick)continue;
+    if(!pick){if(!force)return false;pick={cd:{x:sx+r+5,a:"left"},box:{x:sx+r+2,y:sy-fs/2-furiFs-4,w:boxW+6,h:fs+furiFs+8}};}
     placed.push(pick.box);
     drawLabel(st,pick.cd.x,sy,pick.cd.a,fs,furiFs,major,tw);
-    count++;
+    return true;
+  }
+  const showCap=zoomR>1.7;
+  for(const st of stList){
+    if(!LAND[st.name]||!visLines(st).length)continue;
+    const[sx,sy]=w2s(st.wx,st.wy);
+    if(sx<16||sx>CW-16||sy<48||sy>CH-6)continue;
+    const ex=sx,ey=sy-rBase-17;
+    const box={x:ex-14,y:ey-14,w:28,h:28};
+    if(overlaps(box))continue;
+    ctx.beginPath();ctx.arc(ex,ey,13,0,7);ctx.fillStyle="#fff";ctx.fill();
+    ctx.lineWidth=2;ctx.strokeStyle="rgba(120,140,170,.55)";ctx.stroke();
+    ctx.font="20px serif";ctx.textAlign="center";ctx.textBaseline="middle";
+    ctx.fillText(LAND[st.name][0],ex,ey+1);
+    placed.push(box);
+    if(showCap){
+      const cap=LAND[st.name][1];
+      ctx.font="700 11px "+getJP();
+      const cw=ctx.measureText(cap).width,cy=ey-27;
+      const cbox={x:ex-cw/2-3,y:cy-8,w:cw+6,h:16};
+      if(!overlaps(cbox)){
+        ctx.textAlign="center";ctx.textBaseline="middle";
+        ctx.lineWidth=3.2;ctx.strokeStyle="rgba(255,255,255,.96)";ctx.strokeText(cap,ex,cy);
+        ctx.fillStyle="#e8730a";ctx.fillText(cap,ex,cy);
+        placed.push(cbox);
+      }
+    }
+    placeName(st,true);named.add(st.name);
+  }
+
+  // ほかの駅名 ＋ ふりがな（拡大すると ぜんぶ でる。動かしている間は おもな駅だけで サクサク）
+  const fast=interacting;
+  for(const st of stList){
+    if(named.has(st.name))continue;
+    const major=st.deg>=4;
+    const force=(st===flashSt||st===hoverSt);
+    if(!major&&!showMinor&&!force)continue;
+    if(fast&&!major&&!force)continue;
+    placeName(st,force);
   }
 
   if(hoverSt)ring(hoverSt,"#ff8c42");
@@ -467,13 +603,13 @@ let dragging=false,lastX=0,lastY=0;
 cv.addEventListener('mousedown',e=>{dragging=true;lastX=e.clientX;lastY=e.clientY;cv.classList.add('drag');});
 window.addEventListener('mouseup',()=>{dragging=false;cv.classList.remove('drag');});
 window.addEventListener('mousemove',e=>{
-  if(dragging){view.cx-=(e.clientX-lastX)/view.scale;view.cy-=(e.clientY-lastY)/view.scale;lastX=e.clientX;lastY=e.clientY;draw();}
+  if(dragging){view.cx-=(e.clientX-lastX)/view.scale;view.cy-=(e.clientY-lastY)/view.scale;lastX=e.clientX;lastY=e.clientY;markInteract();scheduleDraw();}
   else hoverTest(e);
 });
 cv.addEventListener('wheel',e=>{e.preventDefault();const r=cv.getBoundingClientRect();zoomAt(Math.pow(1.0015,-e.deltaY),e.clientX-r.left,e.clientY-r.top);},{passive:false});
 function zoomAt(f,sx,sy){
-  const ns=clampScale(view.scale*f);if(ns===view.scale){draw();return;}
-  const[bx,by]=s2w(sx,sy);view.scale=ns;const[ax,ay]=s2w(sx,sy);view.cx+=bx-ax;view.cy+=by-ay;draw();
+  const ns=clampScale(view.scale*f);if(ns===view.scale)return;
+  const[bx,by]=s2w(sx,sy);view.scale=ns;const[ax,ay]=s2w(sx,sy);view.cx+=bx-ax;view.cy+=by-ay;markInteract();scheduleDraw();
 }
 let touchMode=0,tLX=0,tLY=0,tDist=0,tCx=0,tCy=0,tapX=0,tapY=0,tapMoved=false;
 cv.addEventListener('touchstart',e=>{
@@ -482,7 +618,7 @@ cv.addEventListener('touchstart',e=>{
 },{passive:false});
 cv.addEventListener('touchmove',e=>{
   e.preventDefault();
-  if(touchMode===1&&e.touches.length===1){const t=e.touches[0];if(Math.abs(t.clientX-tapX)+Math.abs(t.clientY-tapY)>8)tapMoved=true;view.cx-=(t.clientX-tLX)/view.scale;view.cy-=(t.clientY-tLY)/view.scale;tLX=t.clientX;tLY=t.clientY;draw();}
+  if(touchMode===1&&e.touches.length===1){const t=e.touches[0];if(Math.abs(t.clientX-tapX)+Math.abs(t.clientY-tapY)>8)tapMoved=true;view.cx-=(t.clientX-tLX)/view.scale;view.cy-=(t.clientY-tLY)/view.scale;tLX=t.clientX;tLY=t.clientY;markInteract();scheduleDraw();}
   else if(touchMode===2&&e.touches.length===2){const[a,b]=e.touches;const nd=Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY);zoomAt(nd/tDist,tCx,tCy);tDist=nd;}
 },{passive:false});
 cv.addEventListener('touchend',e=>{
@@ -527,7 +663,7 @@ function flyTo(name){
   const st=stations[name];if(!st)return;
   const tScale=clampScale(fitScale*7),s0=view.scale,cx0=view.cx,cy0=view.cy,t0=performance.now(),dur=620;
   flashSt=st;flashUntil=t0+dur+1600;
-  function step(now){let k=Math.min(1,(now-t0)/dur);k=1-Math.pow(1-k,3);view.scale=s0+(tScale-s0)*k;view.cx=cx0+(st.wx-cx0)*k;view.cy=cy0+(st.wy-cy0)*k;draw();if(k<1)requestAnimationFrame(step);}
+  function step(now){let k=Math.min(1,(now-t0)/dur);k=1-Math.pow(1-k,3);view.scale=s0+(tScale-s0)*k;view.cx=cx0+(st.wx-cx0)*k;view.cy=cy0+(st.wy-cy0)*k;interacting=(k<1);draw();if(k<1)requestAnimationFrame(step);}
   requestAnimationFrame(step);
 }
 
