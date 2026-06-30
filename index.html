@@ -1,0 +1,586 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>でんしゃ ろせんず ｜ 首都圏</title>
+<style>
+  :root{
+    --ink:#2f3640;
+    --ink-soft:#5b6675;
+    --furi:#8a93a3;
+    --card:rgba(255,255,255,.92);
+    --card-line:rgba(120,140,170,.28);
+    --accent:#ff8c42;
+    --jp:"Hiragino Maru Gothic ProN","Hiragino Maru Gothic Pro","Yu Gothic Medium","YuGothic","Meiryo",sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0}
+  body{
+    background:
+      radial-gradient(1100px 700px at 78% -8%, #dcefff 0%, transparent 60%),
+      radial-gradient(900px 800px at 5% 108%, #fff2da 0%, transparent 55%),
+      linear-gradient(180deg,#eaf5ff 0%, #fbf6ec 100%);
+    color:var(--ink);
+    font-family:var(--jp);
+    overflow:hidden;
+    -webkit-text-size-adjust:100%;
+  }
+  #stage{position:fixed;inset:0}
+  #map{display:block;width:100%;height:100%;cursor:grab;touch-action:none}
+  #map.drag{cursor:grabbing}
+
+  .card{
+    position:fixed;background:var(--card);
+    border:1.5px solid var(--card-line);border-radius:20px;
+    backdrop-filter:blur(8px);box-shadow:0 10px 30px rgba(70,100,140,.18);
+  }
+  #title{left:16px;top:14px;padding:14px 18px 15px;max-width:min(72vw,400px)}
+  #title h1{margin:0;font-size:21px;font-weight:800;letter-spacing:.02em;line-height:1.25}
+  #title p{margin:7px 0 0;font-size:12.5px;color:var(--ink-soft);line-height:1.6}
+
+  #searchWrap{right:16px;top:14px;width:min(52vw,280px);padding:11px}
+  #search{
+    width:100%;border:2px solid #e3e9f1;outline:none;background:#fff;color:var(--ink);
+    font-family:var(--jp);font-size:16px;padding:11px 14px;border-radius:14px;
+  }
+  #search::placeholder{color:#a7b0bd}
+  #search:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(255,140,66,.16)}
+  #sug{margin:9px 0 0;max-height:260px;overflow:auto;display:none}
+  #sug.open{display:block}
+  .sug{display:flex;align-items:center;gap:10px;padding:9px 9px;border-radius:12px;cursor:pointer}
+  .sug:hover{background:#f1f6fc}
+  .sug .nm{display:flex;flex-direction:column;line-height:1.15}
+  .sug .nm b{font-size:15px;font-weight:700}
+  .sug .nm em{font-size:10.5px;color:var(--furi);font-style:normal}
+  .sug .dotrow{margin-left:auto;display:flex;gap:3px}
+  .sug .dotrow i{width:9px;height:9px;border-radius:50%;display:block}
+
+  #legend{left:16px;bottom:16px;width:min(86vw,300px);padding:14px 14px 15px;max-height:min(60vh,520px);display:flex;flex-direction:column}
+  #legend h2{margin:0 0 11px;font-size:14px;font-weight:800;color:var(--ink);display:flex;align-items:center}
+  #legend h2 small{font-weight:600;color:var(--ink-soft);font-size:11px;margin-left:6px}
+  #legClose{display:none;margin-left:auto;border:none;background:#eef2f7;color:var(--ink-soft);
+    width:30px;height:30px;border-radius:9px;font-size:16px;font-weight:800;cursor:pointer;line-height:1}
+  #legendBtn{display:none;left:16px;bottom:16px;padding:13px 18px;font-size:15px;font-weight:800;
+    color:var(--ink);cursor:pointer;align-items:center;gap:8px;border-radius:16px}
+  #legendBtn:active{transform:scale(.95)}
+  .grpbtns{display:flex;gap:7px;margin-bottom:12px;flex-wrap:wrap}
+  .grpbtn{
+    flex:1 1 auto;font-family:var(--jp);font-size:13px;font-weight:700;color:var(--ink);
+    background:#fff;border:2px solid #e3e9f1;padding:8px 6px;border-radius:13px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;gap:6px;transition:.15s;white-space:nowrap;
+  }
+  .grpbtn .sw{width:12px;height:12px;border-radius:4px;flex:none}
+  .grpbtn.off{opacity:.35}
+  .grpbtn:active{transform:scale(.96)}
+  #lines{overflow:auto;margin:0;padding:2px;display:grid;grid-template-columns:1fr 1fr;gap:3px 12px}
+  .lrow{display:flex;align-items:center;gap:9px;padding:5px 4px;cursor:pointer;border-radius:9px}
+  .lrow:hover{background:#f1f6fc}
+  .lrow.off{opacity:.32}
+  .lrow .bar{width:20px;height:6px;border-radius:4px;flex:none}
+  .lrow span{font-size:12.5px;font-weight:600;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+  #zoom{right:16px;bottom:16px;display:flex;flex-direction:column;padding:0;overflow:hidden}
+  #zoom button{
+    width:58px;height:56px;border:none;background:#fff;color:var(--ink);
+    font-size:26px;font-weight:800;cursor:pointer;font-family:var(--jp);
+    display:flex;align-items:center;justify-content:center;transition:.12s;
+  }
+  #zoom button+button{border-top:2px solid #eef2f7}
+  #zoom button:hover{background:#fff6ee;color:var(--accent)}
+  #zoom button:active{transform:scale(.93)}
+  #zoom .z-reset{font-size:15px;font-weight:800}
+
+  #tip{
+    position:fixed;pointer-events:none;z-index:30;display:none;
+    background:#fff;border:2px solid var(--card-line);border-radius:14px;padding:11px 13px;
+    box-shadow:0 12px 30px rgba(70,100,140,.28);max-width:240px;
+  }
+  #tip b{font-size:17px;font-weight:800}
+  #tip .furi{font-size:11px;color:var(--furi);margin-top:2px}
+  #tip .tlines{display:flex;flex-direction:column;gap:4px;margin-top:9px}
+  #tip .tline{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink-soft);font-weight:600}
+  #tip .tline i{width:14px;height:5px;border-radius:3px;flex:none}
+
+  #hint{
+    position:fixed;left:50%;bottom:16px;transform:translateX(-50%);
+    font-size:12.5px;font-weight:700;color:#7a8694;
+    background:rgba(255,255,255,.78);padding:7px 16px;border-radius:22px;pointer-events:none;
+    box-shadow:0 4px 14px rgba(70,100,140,.14);transition:opacity .6s;
+  }
+  @media (max-width:760px){
+    #title{max-width:none;padding:10px 14px}
+    #title h1{font-size:16px;white-space:nowrap}
+    #title h1 .hideSm{display:none}
+    #title p{display:none}
+    #searchWrap{width:min(54vw,210px);padding:9px}
+    #search{font-size:15px;padding:9px 11px}
+    #legend{width:min(92vw,330px);max-height:72vh;display:none}
+    #legend.open{display:flex}
+    #lines{grid-template-columns:1fr 1fr}
+    #legClose{display:flex;align-items:center;justify-content:center}
+    #legendBtn{display:flex}
+    #zoom button{width:52px;height:50px;font-size:23px}
+    #zoom .z-reset{font-size:12px}
+    #hint{display:none}
+    #tip b{font-size:18px}
+  }
+  @media (max-width:420px){
+    #lines{grid-template-columns:1fr}
+  }
+</style>
+
+<div id="stage"><canvas id="map"></canvas></div>
+
+<div id="title" class="card">
+  <h1>🚃 <span class="hideSm">でんしゃ </span>ろせんず</h1>
+  <p>首都圏（しゅとけん）の JR・ちかてつ・してつ。ゆびで うごかして、おおきく すると えきの なまえが でてくるよ！</p>
+</div>
+
+<div id="searchWrap" class="card">
+  <input id="search" type="text" placeholder="えきを さがす（れい：しんじゅく）" autocomplete="off" spellcheck="false">
+  <div id="sug"></div>
+</div>
+
+<button id="legendBtn" class="card">🚇 ろせん</button>
+
+<div id="legend" class="card">
+  <h2>ろせん <small>いろで わかれているよ</small><button id="legClose" title="とじる">✕</button></h2>
+  <div class="grpbtns" id="grpbtns"></div>
+  <div id="lines"></div>
+</div>
+
+<div id="zoom" class="card">
+  <button id="zin" title="おおきく">＋</button>
+  <button id="zout" title="ちいさく">−</button>
+  <button id="zreset" class="z-reset" title="ぜんぶ みる">ぜんぶ</button>
+</div>
+
+<div id="tip"></div>
+<div id="hint">ホイール＝ズーム ・ ドラッグ＝うごかす ・ えきを さわると くわしく でるよ</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ===== 駅座標（おおよその経度・緯度） ===== */
+const S = {
+ "東京":[139.767,35.681],"神田":[139.771,35.692],"秋葉原":[139.773,35.698],
+ "御徒町":[139.774,35.707],"上野":[139.777,35.714],"鶯谷":[139.778,35.721],
+ "日暮里":[139.771,35.728],"西日暮里":[139.767,35.732],"田端":[139.761,35.738],
+ "駒込":[139.748,35.736],"巣鴨":[139.739,35.733],"大塚":[139.728,35.731],
+ "池袋":[139.711,35.729],"目白":[139.706,35.721],"高田馬場":[139.703,35.712],
+ "新大久保":[139.700,35.701],"新宿":[139.700,35.690],"代々木":[139.702,35.683],
+ "原宿":[139.702,35.670],"渋谷":[139.701,35.658],"恵比寿":[139.710,35.646],
+ "目黒":[139.715,35.633],"五反田":[139.723,35.626],"大崎":[139.728,35.620],
+ "品川":[139.738,35.628],"田町":[139.748,35.646],"浜松町":[139.757,35.655],
+ "新橋":[139.758,35.666],"有楽町":[139.763,35.675],
+ "御茶ノ水":[139.765,35.700],"水道橋":[139.752,35.702],"飯田橋":[139.745,35.702],
+ "市ヶ谷":[139.736,35.691],"四ツ谷":[139.730,35.686],"千駄ヶ谷":[139.711,35.681],
+ "信濃町":[139.720,35.680],"大久保":[139.685,35.701],"東中野":[139.683,35.707],
+ "中野":[139.666,35.706],"高円寺":[139.650,35.705],"阿佐ヶ谷":[139.636,35.704],
+ "荻窪":[139.620,35.704],"西荻窪":[139.599,35.704],"吉祥寺":[139.580,35.703],
+ "三鷹":[139.560,35.702],"浅草橋":[139.785,35.696],"両国":[139.793,35.696],
+ "錦糸町":[139.814,35.697],"亀戸":[139.826,35.697],
+ "大井町":[139.734,35.606],"大森":[139.728,35.589],"蒲田":[139.716,35.562],
+ "赤羽":[139.721,35.778],"王子":[139.738,35.753],"川崎":[139.697,35.531],
+ "横浜":[139.622,35.466],"新木場":[139.827,35.646],"舞浜":[139.883,35.636],
+ "表参道":[139.712,35.665],"青山一丁目":[139.724,35.673],"赤坂見附":[139.737,35.677],
+ "虎ノ門":[139.750,35.667],"銀座":[139.764,35.672],"日本橋":[139.774,35.682],
+ "三越前":[139.774,35.686],"浅草":[139.797,35.711],"田原町":[139.791,35.711],
+ "上野広小路":[139.772,35.708],"中野坂上":[139.685,35.697],"新宿三丁目":[139.705,35.691],
+ "霞ケ関":[139.751,35.673],"大手町":[139.766,35.686],"後楽園":[139.752,35.708],
+ "中目黒":[139.699,35.644],"広尾":[139.722,35.652],"六本木":[139.731,35.663],
+ "日比谷":[139.760,35.674],"八丁堀":[139.777,35.677],"茅場町":[139.778,35.681],
+ "北千住":[139.805,35.749],"南千住":[139.798,35.733],
+ "早稲田":[139.720,35.705],"九段下":[139.752,35.695],"門前仲町":[139.797,35.671],
+ "東陽町":[139.817,35.669],"西葛西":[139.860,35.663],"浦安":[139.892,35.660],
+ "西船橋":[139.920,35.708],"代々木上原":[139.683,35.668],"明治神宮前":[139.706,35.670],
+ "国会議事堂前":[139.745,35.674],"町屋":[139.781,35.743],"綾瀬":[139.825,35.762],
+ "小竹向原":[139.679,35.745],"月島":[139.784,35.665],"豊洲":[139.796,35.654],
+ "永田町":[139.740,35.679],"半蔵門":[139.742,35.685],"神保町":[139.758,35.696],
+ "清澄白河":[139.800,35.681],"押上":[139.813,35.710],"白金高輪":[139.734,35.643],
+ "麻布十番":[139.736,35.656],"東新宿":[139.706,35.697],"泉岳寺":[139.740,35.640],
+ "大門":[139.755,35.658],"東銀座":[139.767,35.669],"人形町":[139.783,35.685],
+ "蔵前":[139.792,35.703],"三田":[139.748,35.648],"春日":[139.752,35.708],
+ "森下":[139.797,35.690],"住吉":[139.817,35.690],"都庁前":[139.692,35.690],
+ "汐留":[139.760,35.664],"勝どき":[139.778,35.659],"練馬":[139.654,35.737],
+ "光が丘":[139.626,35.760],"代官山":[139.703,35.649],"自由が丘":[139.667,35.607],
+ "田園調布":[139.668,35.595],"武蔵小杉":[139.659,35.576],"日吉":[139.647,35.555],
+ "三軒茶屋":[139.670,35.643],"二子玉川":[139.626,35.611],"溝の口":[139.610,35.600],
+ "下北沢":[139.668,35.661],"成城学園前":[139.601,35.640],"登戸":[139.566,35.620],
+ "笹塚":[139.666,35.674],"明大前":[139.649,35.668],"調布":[139.544,35.652],
+ "西武新宿":[139.700,35.694],"田無":[139.539,35.726],"江古田":[139.668,35.737],
+ "石神井公園":[139.604,35.749],"和光市":[139.612,35.781],"西新井":[139.794,35.778],
+ "京成上野":[139.774,35.712],"青砥":[139.851,35.745],"京成高砂":[139.866,35.752],
+ "京急蒲田":[139.722,35.561],"羽田空港":[139.785,35.549],"新御徒町":[139.775,35.708],
+ "八潮":[139.838,35.823],"東京テレポート":[139.779,35.626]
+};
+
+/* ===== ふりがな ===== */
+const YOMI={
+ "東京":"とうきょう","神田":"かんだ","秋葉原":"あきはばら","御徒町":"おかちまち","上野":"うえの",
+ "鶯谷":"うぐいすだに","日暮里":"にっぽり","西日暮里":"にしにっぽり","田端":"たばた","駒込":"こまごめ",
+ "巣鴨":"すがも","大塚":"おおつか","池袋":"いけぶくろ","目白":"めじろ","高田馬場":"たかだのばば",
+ "新大久保":"しんおおくぼ","新宿":"しんじゅく","代々木":"よよぎ","原宿":"はらじゅく","渋谷":"しぶや",
+ "恵比寿":"えびす","目黒":"めぐろ","五反田":"ごたんだ","大崎":"おおさき","品川":"しながわ",
+ "田町":"たまち","浜松町":"はままつちょう","新橋":"しんばし","有楽町":"ゆうらくちょう",
+ "御茶ノ水":"おちゃのみず","水道橋":"すいどうばし","飯田橋":"いいだばし","市ヶ谷":"いちがや",
+ "四ツ谷":"よつや","千駄ヶ谷":"せんだがや","信濃町":"しなのまち","大久保":"おおくぼ","東中野":"ひがしなかの",
+ "中野":"なかの","高円寺":"こうえんじ","阿佐ヶ谷":"あさがや","荻窪":"おぎくぼ","西荻窪":"にしおぎくぼ",
+ "吉祥寺":"きちじょうじ","三鷹":"みたか","浅草橋":"あさくさばし","両国":"りょうごく","錦糸町":"きんしちょう",
+ "亀戸":"かめいど","大井町":"おおいまち","大森":"おおもり","蒲田":"かまた","赤羽":"あかばね",
+ "王子":"おうじ","川崎":"かわさき","横浜":"よこはま","新木場":"しんきば","舞浜":"まいはま",
+ "表参道":"おもてさんどう","青山一丁目":"あおやまいっちょうめ","赤坂見附":"あかさかみつけ","虎ノ門":"とらのもん",
+ "銀座":"ぎんざ","日本橋":"にほんばし","三越前":"みつこしまえ","浅草":"あさくさ","田原町":"たわらまち",
+ "上野広小路":"うえのひろこうじ","中野坂上":"なかのさかうえ","新宿三丁目":"しんじゅくさんちょうめ",
+ "霞ケ関":"かすみがせき","大手町":"おおてまち","後楽園":"こうらくえん","中目黒":"なかめぐろ","広尾":"ひろお",
+ "六本木":"ろっぽんぎ","日比谷":"ひびや","八丁堀":"はっちょうぼり","茅場町":"かやばちょう","北千住":"きたせんじゅ",
+ "南千住":"みなみせんじゅ","早稲田":"わせだ","九段下":"くだんした","門前仲町":"もんぜんなかちょう",
+ "東陽町":"とうようちょう","西葛西":"にしかさい","浦安":"うらやす","西船橋":"にしふなばし",
+ "代々木上原":"よよぎうえはら","明治神宮前":"めいじじんぐうまえ","国会議事堂前":"こっかいぎじどうまえ",
+ "町屋":"まちや","綾瀬":"あやせ","小竹向原":"こたけむかいはら","月島":"つきしま","豊洲":"とよす",
+ "永田町":"ながたちょう","半蔵門":"はんぞうもん","神保町":"じんぼうちょう","清澄白河":"きよすみしらかわ",
+ "押上":"おしあげ","白金高輪":"しろかねたかなわ","麻布十番":"あざぶじゅうばん","東新宿":"ひがししんじゅく",
+ "泉岳寺":"せんがくじ","大門":"だいもん","東銀座":"ひがしぎんざ","人形町":"にんぎょうちょう","蔵前":"くらまえ",
+ "三田":"みた","春日":"かすが","森下":"もりした","住吉":"すみよし","都庁前":"とちょうまえ","汐留":"しおどめ",
+ "勝どき":"かちどき","練馬":"ねりま","光が丘":"ひかりがおか","代官山":"だいかんやま","自由が丘":"じゆうがおか",
+ "田園調布":"でんえんちょうふ","武蔵小杉":"むさしこすぎ","日吉":"ひよし","三軒茶屋":"さんげんぢゃや",
+ "二子玉川":"ふたこたまがわ","溝の口":"みぞのくち","下北沢":"しもきたざわ","成城学園前":"せいじょうがくえんまえ",
+ "登戸":"のぼりと","笹塚":"ささづか","明大前":"めいだいまえ","調布":"ちょうふ","西武新宿":"せいぶしんじゅく",
+ "田無":"たなし","江古田":"えこだ","石神井公園":"しゃくじいこうえん","和光市":"わこうし","西新井":"にしあらい",
+ "京成上野":"けいせいうえの","青砥":"あおと","京成高砂":"けいせいたかさご","京急蒲田":"けいきゅうかまた",
+ "羽田空港":"はねだくうこう","新御徒町":"しんおかちまち","八潮":"やしお","東京テレポート":"とうきょうてれぽーと"
+};
+
+/* ===== ランドマーク（こどもが しっている ばしょ） ===== */
+const LAND={
+ "押上":["🗼","スカイツリー"],"舞浜":["🏰","ディズニー"],"羽田空港":["✈️","くうこう"],
+ "上野":["🐼","どうぶつえん"],"浅草":["⛩️","かみなりもん"],"東京":["🚄","しんかんせん"],
+ "横浜":["⚓","みなとまち"],"両国":["🥋","おすもう"],"後楽園":["🎢","ゆうえんち"],
+ "渋谷":["🐕","ハチこう"]
+};
+
+/* ===== 路線（公式ラインカラー） ===== */
+const LINES = [
+ {n:"JR山手線",g:"jr",c:"#9ACD32",s:["東京","神田","秋葉原","御徒町","上野","鶯谷","日暮里","西日暮里","田端","駒込","巣鴨","大塚","池袋","目白","高田馬場","新大久保","新宿","代々木","原宿","渋谷","恵比寿","目黒","五反田","大崎","品川","田町","浜松町","新橋","有楽町","東京"]},
+ {n:"JR中央線快速",g:"jr",c:"#F15A22",s:["東京","神田","御茶ノ水","四ツ谷","新宿","中野","高円寺","阿佐ヶ谷","荻窪","西荻窪","吉祥寺","三鷹"]},
+ {n:"JR中央・総武線",g:"jr",c:"#FFD400",s:["三鷹","吉祥寺","西荻窪","荻窪","阿佐ヶ谷","高円寺","中野","東中野","大久保","新宿","代々木","千駄ヶ谷","信濃町","四ツ谷","市ヶ谷","飯田橋","水道橋","御茶ノ水","秋葉原","浅草橋","両国","錦糸町","亀戸"]},
+ {n:"JR京浜東北線",g:"jr",c:"#00B2E5",s:["赤羽","王子","田端","西日暮里","日暮里","上野","御徒町","秋葉原","神田","東京","有楽町","新橋","浜松町","田町","品川","大井町","大森","蒲田","川崎","横浜"]},
+ {n:"JR埼京線",g:"jr",c:"#16B17B",s:["大崎","恵比寿","渋谷","新宿","池袋","赤羽"]},
+ {n:"JR東海道線",g:"jr",c:"#F7931E",s:["東京","新橋","品川","川崎","横浜"]},
+ {n:"JR横須賀線",g:"jr",c:"#1069B4",s:["東京","新橋","品川","武蔵小杉","横浜"]},
+ {n:"JR京葉線",g:"jr",c:"#D6262C",s:["東京","新木場","舞浜"]},
+
+ {n:"銀座線",g:"metro",c:"#FF9500",s:["渋谷","表参道","青山一丁目","赤坂見附","虎ノ門","新橋","銀座","日本橋","三越前","神田","上野広小路","上野","田原町","浅草"]},
+ {n:"丸ノ内線",g:"metro",c:"#E60012",s:["荻窪","中野坂上","新宿","新宿三丁目","四ツ谷","赤坂見附","国会議事堂前","霞ケ関","銀座","東京","大手町","御茶ノ水","後楽園","池袋"]},
+ {n:"日比谷線",g:"metro",c:"#B5B5AC",s:["中目黒","恵比寿","広尾","六本木","霞ケ関","日比谷","銀座","東銀座","八丁堀","茅場町","人形町","秋葉原","上野","南千住","北千住"]},
+ {n:"東西線",g:"metro",c:"#009BBF",s:["中野","高田馬場","早稲田","飯田橋","九段下","大手町","日本橋","茅場町","門前仲町","東陽町","西葛西","浦安","西船橋"]},
+ {n:"千代田線",g:"metro",c:"#00BB85",s:["代々木上原","明治神宮前","表参道","国会議事堂前","霞ケ関","日比谷","大手町","西日暮里","町屋","北千住","綾瀬"]},
+ {n:"有楽町線",g:"metro",c:"#C1A470",s:["小竹向原","池袋","飯田橋","市ヶ谷","有楽町","月島","豊洲","新木場"]},
+ {n:"半蔵門線",g:"metro",c:"#8F76D6",s:["渋谷","表参道","青山一丁目","永田町","半蔵門","九段下","神保町","大手町","三越前","清澄白河","住吉","錦糸町","押上"]},
+ {n:"南北線",g:"metro",c:"#00AC9B",s:["目黒","白金高輪","麻布十番","永田町","四ツ谷","市ヶ谷","飯田橋","後楽園","駒込","王子"]},
+ {n:"副都心線",g:"metro",c:"#9C5E31",s:["小竹向原","池袋","東新宿","新宿三丁目","明治神宮前","渋谷"]},
+
+ {n:"都営浅草線",g:"toei",c:"#E85298",s:["泉岳寺","三田","大門","新橋","東銀座","日本橋","人形町","浅草橋","蔵前","浅草","押上"]},
+ {n:"都営三田線",g:"toei",c:"#0079C2",s:["目黒","白金高輪","三田","日比谷","大手町","神保町","水道橋","春日","巣鴨"]},
+ {n:"都営新宿線",g:"toei",c:"#6CBB5A",s:["新宿","新宿三丁目","市ヶ谷","九段下","神保町","森下","住吉"]},
+ {n:"都営大江戸線",g:"toei",c:"#B6007A",s:["都庁前","東新宿","飯田橋","春日","新御徒町","蔵前","両国","森下","清澄白河","門前仲町","月島","勝どき","汐留","大門","麻布十番","六本木","青山一丁目","代々木","新宿","都庁前","中野坂上","東中野","練馬","光が丘"]},
+
+ {n:"東急東横線",g:"priv",c:"#E8334A",s:["渋谷","代官山","中目黒","自由が丘","田園調布","武蔵小杉","日吉","横浜"]},
+ {n:"東急田園都市線",g:"priv",c:"#20A288",s:["渋谷","三軒茶屋","二子玉川","溝の口"]},
+ {n:"小田急小田原線",g:"priv",c:"#0083CA",s:["新宿","代々木上原","下北沢","成城学園前","登戸"]},
+ {n:"京王線",g:"priv",c:"#DD0077",s:["新宿","笹塚","明大前","調布"]},
+ {n:"京王井の頭線",g:"priv",c:"#0F3F9E",s:["渋谷","下北沢","明大前","吉祥寺"]},
+ {n:"西武新宿線",g:"priv",c:"#009BD6",s:["西武新宿","高田馬場","田無"]},
+ {n:"西武池袋線",g:"priv",c:"#DE7E12",s:["池袋","江古田","練馬","石神井公園"]},
+ {n:"東武東上線",g:"priv",c:"#006FBC",s:["池袋","和光市"]},
+ {n:"東武スカイツリーライン",g:"priv",c:"#EB6100",s:["浅草","押上","北千住","西新井"]},
+ {n:"京成本線",g:"priv",c:"#1F5FA6",s:["京成上野","日暮里","町屋","青砥","京成高砂"]},
+ {n:"京急本線",g:"priv",c:"#D61518",s:["品川","京急蒲田","羽田空港"]},
+ {n:"つくばエクスプレス",g:"priv",c:"#0A52A0",s:["秋葉原","新御徒町","南千住","北千住","八潮"]},
+ {n:"りんかい線",g:"priv",c:"#5B3284",s:["大崎","東京テレポート","新木場"]}
+];
+
+const GROUPS=[
+ {id:"jr",label:"JR",c:"#9ACD32"},
+ {id:"metro",label:"メトロ",c:"#009BBF"},
+ {id:"toei",label:"とえい",c:"#B6007A"},
+ {id:"priv",label:"してつ",c:"#DD0077"}
+];
+
+/* ===== 投影 ===== */
+const LON0=139.74,LAT0=35.68,COS=Math.cos(LAT0*Math.PI/180);
+function proj(lon,lat){return[(lon-LON0)*COS,-(lat-LAT0)];}
+
+const stations={};
+for(const name in S){const[lo,la]=S[name];const[wx,wy]=proj(lo,la);stations[name]={name,wx,wy,lines:[],deg:0};}
+LINES.forEach((L,li)=>{L.s.forEach(nm=>{const st=stations[nm];if(!st)return;if(st.lines[st.lines.length-1]!==li)st.lines.push(li);});});
+const HUB_BOOST={"新宿":6,"東京":6,"渋谷":5,"池袋":5,"品川":4,"上野":4,"大手町":4,"横浜":4,"北千住":3,"飯田橋":2,"日本橋":2};
+const stList=Object.values(stations);
+stList.forEach(st=>{st.deg=st.lines.length+(HUB_BOOST[st.name]||0)+(LAND[st.name]?10:0);});
+stList.sort((a,b)=>b.deg-a.deg||a.wx-b.wx);
+
+/* ===== キャンバス & ビュー ===== */
+const cv=document.getElementById('map'),ctx=cv.getContext('2d');
+let DPR=Math.min(window.devicePixelRatio||1,2),CW=0,CH=0;
+const view={scale:1,cx:0,cy:0};
+const hidden={},hiddenGroup={};
+let fitScale=1,fitDone=false;
+
+function computeFit(){
+  let minx=1e9,miny=1e9,maxx=-1e9,maxy=-1e9;
+  stList.forEach(s=>{if(s.wx<minx)minx=s.wx;if(s.wx>maxx)maxx=s.wx;if(s.wy<miny)miny=s.wy;if(s.wy>maxy)maxy=s.wy;});
+  const sx=CW/((maxx-minx)||1),sy=CH/((maxy-miny)||1);
+  fitScale=Math.min(sx,sy)*0.9;
+  view.scale=fitScale;view.cx=(minx+maxx)/2;view.cy=(miny+maxy)/2;
+}
+function resize(){
+  DPR=Math.min(window.devicePixelRatio||1,2);
+  CW=cv.clientWidth;CH=cv.clientHeight;
+  cv.width=Math.round(CW*DPR);cv.height=Math.round(CH*DPR);
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  if(CW>0&&CH>0&&!fitDone){computeFit();fitDone=true;}
+  draw();
+}
+function w2s(wx,wy){return[(wx-view.cx)*view.scale+CW/2,(wy-view.cy)*view.scale+CH/2];}
+function s2w(sx,sy){return[(sx-CW/2)/view.scale+view.cx,(sy-CH/2)/view.scale+view.cy];}
+const MINS=()=>fitScale*0.55,MAXS=()=>fitScale*22;
+function clampScale(v){return Math.max(MINS(),Math.min(MAXS(),v));}
+function lineVisible(li){return!hidden[li]&&!hiddenGroup[LINES[li].g];}
+function visLines(st){return st.lines.filter(lineVisible);}
+
+let _jp=null;function getJP(){if(!_jp)_jp=getComputedStyle(document.body).fontFamily;return _jp;}
+
+/* ===== 描画 ===== */
+let hoverSt=null,flashSt=null,flashUntil=0;
+
+function draw(){
+  ctx.clearRect(0,0,CW,CH);
+  const zoomR=view.scale/fitScale;
+  const lw=Math.max(3,Math.min(9,view.scale*0.0011));
+
+  ctx.lineJoin="round";ctx.lineCap="round";
+  // 白いふちどり（路線が きれいに わかれて みえる）
+  ctx.strokeStyle="rgba(255,255,255,.95)";
+  for(let li=0;li<LINES.length;li++){if(!lineVisible(li))continue;ctx.lineWidth=lw+4.5;strokeLine(LINES[li]);}
+  // 路線の いろ
+  for(let li=0;li<LINES.length;li++){if(!lineVisible(li))continue;const L=LINES[li];ctx.strokeStyle=L.c;ctx.lineWidth=lw;strokeLine(L);}
+
+  // えきの まる
+  const showMinor=zoomR>1.5;
+  const rBase=Math.max(2.4,Math.min(8,view.scale*0.00078));
+  for(const st of stList){
+    const vis=visLines(st);if(!vis.length)continue;
+    const[sx,sy]=w2s(st.wx,st.wy);
+    if(sx<-40||sx>CW+40||sy<-40||sy>CH+40)continue;
+    const major=st.deg>=3;
+    if(!major&&!showMinor)continue;
+    const inter=vis.length>=2||major;
+    const r=inter?rBase+1.4:rBase;
+    if(inter){
+      ctx.beginPath();ctx.arc(sx,sy,r+2,0,7);ctx.fillStyle="#fff";ctx.fill();
+      ctx.lineWidth=2.4;ctx.strokeStyle=vis.length>=2?"#3a4150":LINES[vis[0]].c;ctx.stroke();
+      if(vis.length>=2){ctx.beginPath();ctx.arc(sx,sy,Math.max(2,r-1),0,7);ctx.fillStyle="#3a4150";ctx.fill();}
+    }else{
+      ctx.beginPath();ctx.arc(sx,sy,r+1.6,0,7);ctx.fillStyle="#fff";ctx.fill();
+      ctx.beginPath();ctx.arc(sx,sy,r,0,7);ctx.fillStyle=LINES[vis[0]].c;ctx.fill();
+    }
+  }
+
+  // ランドマークの えもじ（いつも みえる）
+  const placed=[];
+  for(const st of stList){
+    if(!LAND[st.name]||!visLines(st).length)continue;
+    const[sx,sy]=w2s(st.wx,st.wy);
+    if(sx<14||sx>CW-14||sy<24||sy>CH-6)continue;
+    const ex=sx,ey=sy-rBase-16;
+    ctx.font="20px serif";ctx.textAlign="center";ctx.textBaseline="middle";
+    ctx.beginPath();ctx.arc(ex,ey,13,0,7);ctx.fillStyle="#fff";ctx.fill();
+    ctx.lineWidth=2;ctx.strokeStyle="rgba(120,140,170,.5)";ctx.stroke();
+    ctx.fillText(LAND[st.name][0],ex,ey+1);
+    placed.push({x:ex-13,y:ey-13,w:26,h:26});
+  }
+
+  // えきめい ＋ ふりがな（ズームで だんだん ふえる）
+  const budget=Math.max(8,Math.round(8*Math.pow(zoomR,1.4)));
+  let count=0;
+  for(const st of stList){
+    if(count>=budget&&st!==flashSt&&st!==hoverSt)break;
+    const vis=visLines(st);if(!vis.length)continue;
+    const[sx,sy]=w2s(st.wx,st.wy);
+    if(sx<10||sx>CW-10||sy<24||sy>CH-8)continue;
+    const major=st.deg>=4,land=!!LAND[st.name];
+    const fs=major||land?15:13;
+    const furiFs=Math.max(9,Math.round(fs*0.62));
+    ctx.font=(major?"800 ":"700 ")+fs+'px '+getJP();
+    const tw=ctx.measureText(st.name).width;
+    ctx.font="600 "+furiFs+'px '+getJP();
+    const yw=ctx.measureText(YOMI[st.name]||"").width;
+    const boxW=Math.max(tw,yw);
+    const r=(vis.length>=2||major)?rBase+2:rBase+1;
+    const cands=[{x:sx+r+5,a:"left"},{x:sx-r-5,a:"right"},{x:sx,a:"center"}];
+    let pick=null;
+    for(const cd of cands){
+      let bx=cd.a==="left"?cd.x:cd.a==="right"?cd.x-boxW:cd.x-boxW/2;
+      const box={x:bx-3,y:sy-fs/2-furiFs-4,w:boxW+6,h:fs+furiFs+8};
+      if(box.x<3||box.x+box.w>CW-3)continue;
+      let hit=false;for(const p of placed){if(box.x<p.x+p.w&&box.x+box.w>p.x&&box.y<p.y+p.h&&box.y+box.h>p.y){hit=true;break;}}
+      if(!hit){pick={cd,box};break;}
+    }
+    if(!pick)continue;
+    placed.push(pick.box);
+    drawLabel(st,pick.cd.x,sy,pick.cd.a,fs,furiFs,major,tw);
+    count++;
+  }
+
+  if(hoverSt)ring(hoverSt,"#ff8c42");
+  if(flashSt&&performance.now()<flashUntil){ring(flashSt,"#ff8c42");requestAnimationFrame(draw);}
+  updateHint();
+}
+
+function strokeLine(L){
+  ctx.beginPath();let started=false;
+  for(const nm of L.s){const st=stations[nm];if(!st)continue;const[sx,sy]=w2s(st.wx,st.wy);if(!started){ctx.moveTo(sx,sy);started=true;}else ctx.lineTo(sx,sy);}
+  ctx.stroke();
+}
+function drawLabel(st,x,y,align,fs,furiFs,major,tw){
+  const cx=align==="left"?x+tw/2:align==="right"?x-tw/2:x;
+  // ふりがな
+  const yomi=YOMI[st.name];
+  if(yomi){
+    ctx.textAlign="center";ctx.textBaseline="middle";ctx.font="600 "+furiFs+'px '+getJP();
+    const fy=y-fs/2-furiFs/2-1;
+    ctx.lineWidth=3;ctx.strokeStyle="rgba(255,255,255,.95)";ctx.strokeText(yomi,cx,fy);
+    ctx.fillStyle="#8a93a3";ctx.fillText(yomi,cx,fy);
+  }
+  // かんじ
+  ctx.textAlign=align;ctx.textBaseline="middle";ctx.font=(major?"800 ":"700 ")+fs+'px '+getJP();
+  ctx.lineWidth=major?4:3.4;ctx.strokeStyle="rgba(255,255,255,.96)";ctx.strokeText(st.name,x,y);
+  ctx.fillStyle=major?"#1f2630":"#2f3640";ctx.fillText(st.name,x,y);
+}
+function ring(st,col){
+  const vis=visLines(st);if(!vis.length)return;
+  const[sx,sy]=w2s(st.wx,st.wy);
+  ctx.beginPath();ctx.arc(sx,sy,12,0,7);ctx.lineWidth=3;ctx.strokeStyle=col;ctx.stroke();
+}
+
+/* ===== 操作 ===== */
+let dragging=false,lastX=0,lastY=0;
+cv.addEventListener('mousedown',e=>{dragging=true;lastX=e.clientX;lastY=e.clientY;cv.classList.add('drag');});
+window.addEventListener('mouseup',()=>{dragging=false;cv.classList.remove('drag');});
+window.addEventListener('mousemove',e=>{
+  if(dragging){view.cx-=(e.clientX-lastX)/view.scale;view.cy-=(e.clientY-lastY)/view.scale;lastX=e.clientX;lastY=e.clientY;draw();}
+  else hoverTest(e);
+});
+cv.addEventListener('wheel',e=>{e.preventDefault();const r=cv.getBoundingClientRect();zoomAt(Math.pow(1.0015,-e.deltaY),e.clientX-r.left,e.clientY-r.top);},{passive:false});
+function zoomAt(f,sx,sy){
+  const ns=clampScale(view.scale*f);if(ns===view.scale){draw();return;}
+  const[bx,by]=s2w(sx,sy);view.scale=ns;const[ax,ay]=s2w(sx,sy);view.cx+=bx-ax;view.cy+=by-ay;draw();
+}
+let touchMode=0,tLX=0,tLY=0,tDist=0,tCx=0,tCy=0,tapX=0,tapY=0,tapMoved=false;
+cv.addEventListener('touchstart',e=>{
+  if(e.touches.length===1){touchMode=1;tLX=tapX=e.touches[0].clientX;tLY=tapY=e.touches[0].clientY;tapMoved=false;}
+  else if(e.touches.length===2){touchMode=2;tapMoved=true;const[a,b]=e.touches;tDist=Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY);const r=cv.getBoundingClientRect();tCx=(a.clientX+b.clientX)/2-r.left;tCy=(a.clientY+b.clientY)/2-r.top;}
+},{passive:false});
+cv.addEventListener('touchmove',e=>{
+  e.preventDefault();
+  if(touchMode===1&&e.touches.length===1){const t=e.touches[0];if(Math.abs(t.clientX-tapX)+Math.abs(t.clientY-tapY)>8)tapMoved=true;view.cx-=(t.clientX-tLX)/view.scale;view.cy-=(t.clientY-tLY)/view.scale;tLX=t.clientX;tLY=t.clientY;draw();}
+  else if(touchMode===2&&e.touches.length===2){const[a,b]=e.touches;const nd=Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY);zoomAt(nd/tDist,tCx,tCy);tDist=nd;}
+},{passive:false});
+cv.addEventListener('touchend',e=>{
+  if(touchMode===1&&!tapMoved&&e.changedTouches.length){
+    const r=cv.getBoundingClientRect(),t=e.changedTouches[0];
+    const st=pickStation(t.clientX-r.left,t.clientY-r.top,24);
+    if(st){hoverSt=st;draw();showTip(st,t.clientX,t.clientY);}else{hoverSt=null;hideTip();draw();}
+  }
+  touchMode=0;
+});
+
+const tip=document.getElementById('tip');
+function pickStation(mx,my,rad){
+  let best=null,bd=rad*rad;
+  for(const st of stList){if(!visLines(st).length)continue;const[sx,sy]=w2s(st.wx,st.wy);const d=(sx-mx)*(sx-mx)+(sy-my)*(sy-my);if(d<bd){bd=d;best=st;}}
+  return best;
+}
+function showTip(st,px,py){
+  const vis=visLines(st),land=LAND[st.name];
+  tip.innerHTML='<b>'+st.name+'</b>'+(YOMI[st.name]?'<div class="furi">'+YOMI[st.name]+'</div>':'')+
+    (land?'<div class="furi">'+land[0]+' '+land[1]+'</div>':'')+
+    '<div class="tlines">'+vis.map(li=>'<div class="tline"><i style="background:'+LINES[li].c+'"></i>'+LINES[li].n+'</div>').join('')+'</div>';
+  tip.style.display='block';
+  const tw=tip.offsetWidth,th=tip.offsetHeight;
+  let x=px+16,y=py+16;
+  if(x+tw>window.innerWidth-8)x=px-tw-16;
+  if(x<8)x=8;
+  if(y+th>window.innerHeight-8)y=py-th-16;
+  if(y<8)y=8;
+  tip.style.left=x+'px';tip.style.top=y+'px';
+}
+function hideTip(){tip.style.display='none';}
+function hoverTest(e){
+  const r=cv.getBoundingClientRect();
+  const best=pickStation(e.clientX-r.left,e.clientY-r.top,15);
+  if(best!==hoverSt){hoverSt=best;draw();}
+  if(best)showTip(best,e.clientX,e.clientY);else hideTip();
+}
+cv.addEventListener('mouseleave',()=>{hoverSt=null;hideTip();draw();});
+
+function flyTo(name){
+  const st=stations[name];if(!st)return;
+  const tScale=clampScale(fitScale*7),s0=view.scale,cx0=view.cx,cy0=view.cy,t0=performance.now(),dur=620;
+  flashSt=st;flashUntil=t0+dur+1600;
+  function step(now){let k=Math.min(1,(now-t0)/dur);k=1-Math.pow(1-k,3);view.scale=s0+(tScale-s0)*k;view.cx=cx0+(st.wx-cx0)*k;view.cy=cy0+(st.wy-cy0)*k;draw();if(k<1)requestAnimationFrame(step);}
+  requestAnimationFrame(step);
+}
+
+/* ===== UI ===== */
+const grpWrap=document.getElementById('grpbtns');
+GROUPS.forEach(G=>{
+  const b=document.createElement('button');b.className='grpbtn';
+  b.innerHTML='<span class="sw" style="background:'+G.c+'"></span>'+G.label;
+  b.onclick=()=>{hiddenGroup[G.id]=!hiddenGroup[G.id];b.classList.toggle('off',hiddenGroup[G.id]);
+    document.querySelectorAll('.lrow[data-g="'+G.id+'"]').forEach(r=>r.classList.toggle('off',hiddenGroup[G.id]));draw();};
+  grpWrap.appendChild(b);
+});
+const linesWrap=document.getElementById('lines');
+LINES.forEach((L,li)=>{
+  const row=document.createElement('div');row.className='lrow';row.dataset.g=L.g;
+  row.innerHTML='<span class="bar" style="background:'+L.c+'"></span><span>'+L.n+'</span>';
+  row.onclick=()=>{hidden[li]=!hidden[li];row.classList.toggle('off',hidden[li]||hiddenGroup[L.g]);draw();};
+  linesWrap.appendChild(row);
+});
+
+const search=document.getElementById('search'),sug=document.getElementById('sug');
+const names=Object.keys(stations);
+function renderSug(q){
+  if(!q){sug.classList.remove('open');sug.innerHTML='';return;}
+  const hits=names.filter(n=>n.indexOf(q)>=0||(YOMI[n]||'').indexOf(q)>=0).sort((a,b)=>stations[b].deg-stations[a].deg).slice(0,8);
+  if(!hits.length){sug.classList.remove('open');sug.innerHTML='';return;}
+  sug.innerHTML=hits.map(n=>{
+    const dots=stations[n].lines.slice(0,6).map(li=>'<i style="background:'+LINES[li].c+'"></i>').join('');
+    return '<div class="sug" data-n="'+n+'"><span class="nm"><b>'+n+'</b><em>'+(YOMI[n]||'')+'</em></span><span class="dotrow">'+dots+'</span></div>';
+  }).join('');
+  sug.classList.add('open');
+  sug.querySelectorAll('.sug').forEach(el=>el.onclick=()=>choose(el.dataset.n));
+}
+function choose(n){search.value=n;sug.classList.remove('open');flyTo(n);}
+search.addEventListener('input',()=>renderSug(search.value.trim()));
+search.addEventListener('keydown',e=>{if(e.key==='Enter'){const f=sug.querySelector('.sug');if(f)choose(f.dataset.n);}});
+document.addEventListener('click',e=>{if(!e.target.closest('#searchWrap'))sug.classList.remove('open');});
+
+// 凡例の ひらく／とじる（スマホ用。デスクトップではCSSで常に表示）
+const legend=document.getElementById('legend');
+document.getElementById('legendBtn').onclick=()=>legend.classList.add('open');
+document.getElementById('legClose').onclick=()=>legend.classList.remove('open');
+
+document.getElementById('zin').onclick=()=>zoomAt(1.5,CW/2,CH/2);
+document.getElementById('zout').onclick=()=>zoomAt(1/1.5,CW/2,CH/2);
+document.getElementById('zreset').onclick=()=>{computeFit();draw();};
+
+let hintTimer=null;
+function updateHint(){const h=document.getElementById('hint');if(!hintTimer)hintTimer=setTimeout(()=>{h.style.opacity='0';},4800);}
+
+window.addEventListener('resize',resize);
+window.addEventListener('load',resize);
+resize();
+requestAnimationFrame(resize);
+})();
+</script>
