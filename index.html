@@ -105,7 +105,29 @@
     background:rgba(255,255,255,.78);padding:7px 16px;border-radius:22px;pointer-events:none;
     box-shadow:0 4px 14px rgba(70,100,140,.14);transition:opacity .6s;
   }
+  #playBtn{
+    position:fixed;left:50%;top:16px;transform:translateX(-50%);z-index:22;
+    background:linear-gradient(180deg,#ffab5e,#ff8121);color:#fff;border:none;
+    font-family:var(--jp);font-size:15px;font-weight:800;letter-spacing:.02em;
+    padding:12px 22px;border-radius:18px;cursor:pointer;
+    box-shadow:0 8px 22px rgba(255,129,33,.42)}
+  #playBtn:hover{filter:brightness(1.05)}
+  #playBtn:active{transform:translateX(-50%) scale(.95)}
+  #quizBar{
+    position:fixed;left:50%;top:12px;transform:translateX(-50%);z-index:23;display:none;
+    width:min(94vw,540px);padding:13px 16px 14px;text-align:center}
+  #quizBar.on{display:block}
+  #quizBar .q{font-size:21px;font-weight:800;color:var(--ink);line-height:1.35;text-wrap:balance}
+  #quizBar .msg{font-size:16px;font-weight:800;color:var(--accent);min-height:22px;margin-top:5px}
+  #quizBar .chips{display:flex;gap:8px;justify-content:center;align-items:center;margin-top:8px;flex-wrap:wrap}
+  #quizBar .chip{background:#fff;border:2px solid #eef2f7;border-radius:12px;padding:5px 12px;font-size:13px;font-weight:800}
+  #quizBar .chip.star{color:#f5a201}
+  #quizBar button{font-family:var(--jp);border:2px solid #eef2f7;background:#fff;border-radius:12px;padding:6px 12px;font-size:14px;font-weight:800;cursor:pointer}
+  #quizBar button:active{transform:scale(.95)}
   @media (max-width:760px){
+    #playBtn{top:auto;bottom:78px;font-size:14px;padding:11px 18px}
+    body.quizzing #title,body.quizzing #searchWrap{display:none}
+    #quizBar .q{font-size:18px}
     #title{max-width:none;padding:10px 14px}
     #title h1{font-size:16px;white-space:nowrap}
     #title h1 .hideSm{display:none}
@@ -155,6 +177,19 @@
 
 <div id="tip"></div>
 <div id="hint">ホイール＝ズーム ・ ドラッグ＝うごかす ・ えきを さわると くわしく でるよ</div>
+
+<button id="playBtn">🎮 クイズで あそぶ</button>
+<div id="quizBar" class="card">
+  <div class="q" id="quizQ"></div>
+  <div class="msg" id="quizMsg"></div>
+  <div class="chips">
+    <span class="chip star" id="quizScore">⭐ 0</span>
+    <span class="chip" id="quizStreak">れんぞく 0</span>
+    <button id="quizMute" title="おと">🔊</button>
+    <button id="quizSkip" title="つぎ">つぎ ▶</button>
+    <button id="quizClose" title="おわり">やめる</button>
+  </div>
+</div>
 
 <script>
 (function(){
@@ -262,8 +297,8 @@ const LAND={
  "神保町":["📚","ほんの まち"],"浜松町":["🗼","とうきょうタワー"],"月島":["🍢","もんじゃ"],
  "目黒":["🌸","おはなみ"],"飯田橋":["🎣","つりぼり"],"水道橋":["⚾","やきゅう"],
  "高尾":["🗻","たかおさん"],"鎌倉":["🗿","だいぶつ"],"葛西臨海公園":["🐧","すいぞくえん"],
- "大宮":["🚂","てつどうはくぶつかん"],"海浜幕張":["🏟️","まくはりメッセ"],"立川":["🐘","どうぶつえん"],
- "川越":["🏯","こえど かわごえ"],"高尾山口":["🗻","たかおさん"],"町田":["🛍️","まちだ"]
+ "大宮":["🚂","てつどうはくぶつかん"],"海浜幕張":["🏟️","まくはりメッセ"],"立川":["🚝","モノレール"],
+ "川越":["🏯","こえど かわごえ"],"高尾山口":["🚠","ケーブルカー"],"町田":["🛍️","まちだ"]
 };
 
 /* ===== 路線（公式ラインカラー） ===== */
@@ -318,11 +353,12 @@ const GROUPS=[
 ];
 
 /* ===== 地形（海・川・都道府県）※おおよその かたち ===== */
-const BAY=[[139.78,35.53],[139.80,35.57],[139.80,35.61],[139.82,35.63],[139.85,35.64],[139.89,35.645],[139.905,35.635],[139.92,35.595],[139.92,35.47],[139.78,35.47]];
+const BAY=[[139.63,35.30],[139.65,35.40],[139.70,35.47],[139.75,35.52],[139.78,35.55],[139.79,35.58],[139.80,35.61],[139.83,35.63],[139.86,35.645],[139.90,35.63],[139.95,35.62],[140.00,35.61],[140.06,35.60],[140.10,35.57],[140.12,35.50],[140.12,35.30]];
 const RIVERS=[
  {n:"多摩川",pts:[[139.46,35.66],[139.55,35.625],[139.626,35.611],[139.659,35.576],[139.70,35.55],[139.785,35.535]]},
- {n:"荒川",pts:[[139.62,35.81],[139.70,35.785],[139.74,35.755],[139.79,35.715],[139.83,35.665],[139.85,35.645]]},
- {n:"江戸川",pts:[[139.85,35.82],[139.885,35.775],[139.905,35.73],[139.91,35.70],[139.90,35.665],[139.89,35.638]]}
+ {n:"荒川",pts:[[139.735,35.78],[139.79,35.76],[139.83,35.735],[139.855,35.70],[139.865,35.675],[139.862,35.648]]},
+ {n:"隅田川",pts:[[139.735,35.78],[139.78,35.745],[139.80,35.715],[139.795,35.695],[139.786,35.672],[139.781,35.655]]},
+ {n:"江戸川",pts:[[139.88,35.82],[139.895,35.78],[139.902,35.74],[139.905,35.70],[139.90,35.66],[139.893,35.638]]}
 ];
 const PREFS=[
  {n:"埼玉県",p:[139.66,35.885]},
@@ -602,13 +638,16 @@ function w2s(wx,wy){return[(wx-view.cx)*view.scale+CW/2,(wy-view.cy)*view.scale+
 function s2w(sx,sy){return[(sx-CW/2)/view.scale+view.cx,(sy-CH/2)/view.scale+view.cy];}
 const MINS=()=>fitScale*0.55,MAXS=()=>fitScale*22;
 function clampScale(v){return Math.max(MINS(),Math.min(MAXS(),v));}
-function lineVisible(li){return!hidden[li]&&!hiddenGroup[LINES[li].g];}
+function lineVisible(li){return!hidden[li];}
 function visLines(st){return st.lines.filter(lineVisible);}
 
 let _jp=null;function getJP(){if(!_jp)_jp=getComputedStyle(document.body).fontFamily;return _jp;}
 
 /* ===== 描画 ===== */
 let hoverSt=null,flashSt=null,flashUntil=0;
+let particles=[];
+const quiz={on:false,target:null,score:0,streak:0,misses:0,collected:new Set()};
+let muted=false,actx=null;
 
 function drawGeo(){
   // 東京湾（うみ）
@@ -628,7 +667,7 @@ function drawGeo(){
   for(const p of PREFS){const[wx,wy]=proj(p.p[0],p.p[1]);const[sx,sy]=w2s(wx,wy);if(sx<-120||sx>CW+120||sy<-60||sy>CH+60)continue;ctx.fillText(p.n,sx,sy);}
   // うみ・かわ の なまえ
   ctx.fillStyle="rgba(70,140,180,.65)";ctx.font="700 12px "+getJP();
-  const[bx,by]=w2s.apply(null,proj(139.87,35.55));ctx.fillText("東京湾",bx,by);
+  const[bx,by]=w2s.apply(null,proj(139.97,35.45));ctx.fillText("東京湾",bx,by);
   for(const rv of RIVERS){const m=rv.pts[Math.floor(rv.pts.length/2)];const[wx,wy]=proj(m[0],m[1]);const[sx,sy]=w2s(wx,wy);ctx.fillText(rv.n,sx,sy-9);}
 }
 
@@ -664,6 +703,7 @@ function draw(){
       ctx.beginPath();ctx.arc(sx,sy,r+1.6,0,7);ctx.fillStyle="#fff";ctx.fill();
       ctx.beginPath();ctx.arc(sx,sy,r,0,7);ctx.fillStyle=LINES[vis[0]].c;ctx.fill();
     }
+    if(quiz.collected.has(st.name)){ctx.font="12px serif";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText("⭐",sx+r+4,sy-r-3);}
   }
 
   // ランドマークの アイコン（ちしき）。重なるときは省き、ズームで ぜんぶ でる
@@ -736,7 +776,17 @@ function draw(){
   }
 
   if(hoverSt)ring(hoverSt,"#ff8c42");
-  if(flashSt&&performance.now()<flashUntil){ring(flashSt,"#ff8c42");requestAnimationFrame(draw);}
+  if(flashSt&&performance.now()<flashUntil)ring(flashSt,"#ff8c42");
+  if(particles.length){
+    for(const p of particles){p.x+=p.vx;p.y+=p.vy;p.vy+=0.15;p.life-=0.02;}
+    particles=particles.filter(p=>p.life>0);
+    ctx.textAlign="center";ctx.textBaseline="middle";
+    for(const p of particles){ctx.globalAlpha=Math.max(0,p.life);
+      if(p.star){ctx.font="16px serif";ctx.fillText("⭐",p.x,p.y);}
+      else{ctx.beginPath();ctx.arc(p.x,p.y,4,0,7);ctx.fillStyle=p.col;ctx.fill();}}
+    ctx.globalAlpha=1;
+  }
+  if((flashSt&&performance.now()<flashUntil)||particles.length)requestAnimationFrame(draw);
   updateHint();
 }
 
@@ -767,9 +817,11 @@ function ring(st,col){
 }
 
 /* ===== 操作 ===== */
-let dragging=false,lastX=0,lastY=0;
-cv.addEventListener('mousedown',e=>{dragging=true;lastX=e.clientX;lastY=e.clientY;cv.classList.add('drag');});
-window.addEventListener('mouseup',()=>{dragging=false;cv.classList.remove('drag');});
+let dragging=false,lastX=0,lastY=0,downX=0,downY=0;
+cv.addEventListener('mousedown',e=>{dragging=true;lastX=downX=e.clientX;lastY=downY=e.clientY;cv.classList.add('drag');});
+window.addEventListener('mouseup',e=>{dragging=false;cv.classList.remove('drag');
+  if(quiz.on&&Math.abs(e.clientX-downX)+Math.abs(e.clientY-downY)<6){const r=cv.getBoundingClientRect();quizAnswer(e.clientX-r.left,e.clientY-r.top);}
+});
 window.addEventListener('mousemove',e=>{
   if(dragging){view.cx-=(e.clientX-lastX)/view.scale;view.cy-=(e.clientY-lastY)/view.scale;lastX=e.clientX;lastY=e.clientY;markInteract();scheduleDraw();}
   else hoverTest(e);
@@ -791,9 +843,9 @@ cv.addEventListener('touchmove',e=>{
 },{passive:false});
 cv.addEventListener('touchend',e=>{
   if(touchMode===1&&!tapMoved&&e.changedTouches.length){
-    const r=cv.getBoundingClientRect(),t=e.changedTouches[0];
-    const st=pickStation(t.clientX-r.left,t.clientY-r.top,24);
-    if(st){hoverSt=st;draw();showTip(st,t.clientX,t.clientY);}else{hoverSt=null;hideTip();draw();}
+    const r=cv.getBoundingClientRect(),t=e.changedTouches[0],mx=t.clientX-r.left,my=t.clientY-r.top;
+    if(quiz.on){quizAnswer(mx,my);}
+    else{const st=pickStation(mx,my,24);if(st){hoverSt=st;draw();showTip(st,t.clientX,t.clientY);}else{hoverSt=null;hideTip();draw();}}
   }
   touchMode=0;
 });
@@ -820,6 +872,7 @@ function showTip(st,px,py){
 }
 function hideTip(){tip.style.display='none';}
 function hoverTest(e){
+  if(quiz.on){return;}
   const r=cv.getBoundingClientRect();
   const best=pickStation(e.clientX-r.left,e.clientY-r.top,15);
   if(best!==hoverSt){hoverSt=best;draw();}
@@ -836,19 +889,31 @@ function flyTo(name){
 }
 
 /* ===== UI ===== */
+function groupIdxs(gid){const a=[];LINES.forEach((L,li)=>{if(L.g===gid)a.push(li);});return a;}
+function refreshLegend(){
+  document.querySelectorAll('.lrow').forEach(r=>r.classList.toggle('off',!!hidden[+r.dataset.li]));
+  GROUPS.forEach(G=>{
+    const idxs=groupIdxs(G.id),allHidden=idxs.every(li=>hidden[li]);
+    const btn=document.querySelector('.grpbtn[data-g="'+G.id+'"]');
+    if(btn)btn.classList.toggle('off',allHidden);
+  });
+}
 const grpWrap=document.getElementById('grpbtns');
 GROUPS.forEach(G=>{
-  const b=document.createElement('button');b.className='grpbtn';
+  const b=document.createElement('button');b.className='grpbtn';b.dataset.g=G.id;
   b.innerHTML='<span class="sw" style="background:'+G.c+'"></span>'+G.label;
-  b.onclick=()=>{hiddenGroup[G.id]=!hiddenGroup[G.id];b.classList.toggle('off',hiddenGroup[G.id]);
-    document.querySelectorAll('.lrow[data-g="'+G.id+'"]').forEach(r=>r.classList.toggle('off',hiddenGroup[G.id]));draw();};
+  b.onclick=()=>{
+    const idxs=groupIdxs(G.id),anyVisible=idxs.some(li=>!hidden[li]);
+    idxs.forEach(li=>{hidden[li]=anyVisible;}); // 見えている線があれば全部消す／全部消えていれば全部出す
+    refreshLegend();scheduleDraw();
+  };
   grpWrap.appendChild(b);
 });
 const linesWrap=document.getElementById('lines');
 LINES.forEach((L,li)=>{
-  const row=document.createElement('div');row.className='lrow';row.dataset.g=L.g;
+  const row=document.createElement('div');row.className='lrow';row.dataset.g=L.g;row.dataset.li=li;
   row.innerHTML='<span class="bar" style="background:'+L.c+'"></span><span>'+L.n+'</span>';
-  row.onclick=()=>{hidden[li]=!hidden[li];row.classList.toggle('off',hidden[li]||hiddenGroup[L.g]);draw();};
+  row.onclick=()=>{hidden[li]=!hidden[li];refreshLegend();scheduleDraw();};
   linesWrap.appendChild(row);
 });
 
@@ -881,6 +946,64 @@ document.getElementById('zreset').onclick=()=>{computeFit();draw();};
 
 let hintTimer=null;
 function updateHint(){const h=document.getElementById('hint');if(!hintTimer)hintTimer=setTimeout(()=>{h.style.opacity='0';},4800);}
+
+/* ===== 知育クイズ「えきさがし」＋スタンプ ===== */
+function beep(kind){
+  if(muted)return;
+  try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();}catch(e){return;}
+  const t=actx.currentTime;
+  if(kind==='win'){[523,659,784,1046].forEach((f,i)=>{const o=actx.createOscillator(),g=actx.createGain();o.connect(g);g.connect(actx.destination);const tt=t+i*0.09;o.frequency.setValueAtTime(f,tt);g.gain.setValueAtTime(0.18,tt);g.gain.exponentialRampToValueAtTime(0.001,tt+0.22);o.start(tt);o.stop(tt+0.22);});return;}
+  const o=actx.createOscillator(),g=actx.createGain();o.connect(g);g.connect(actx.destination);
+  if(kind==='ok'){o.frequency.setValueAtTime(660,t);o.frequency.setValueAtTime(990,t+0.11);g.gain.setValueAtTime(0.2,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.34);o.start(t);o.stop(t+0.34);}
+  else{o.type='square';o.frequency.setValueAtTime(160,t);g.gain.setValueAtTime(0.16,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.3);o.start(t);o.stop(t+0.3);}
+}
+function burst(x,y){
+  const cols=['#ff5252','#ffca28','#66bb6a','#42a5f5','#ab47bc','#ff9800'];
+  for(let i=0;i<26;i++){const a=Math.random()*6.283,sp=2+Math.random()*4.5;particles.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-2.5,life:1,col:cols[i%cols.length],star:i%4===0});}
+}
+function quizPool(){
+  const lvl=quiz.score<5?1:quiz.score<12?2:3;
+  return stList.filter(s=>{
+    if(!s.lines.length)return false;
+    if(lvl===1)return LAND[s.name]||s.deg>=4;
+    if(lvl===2)return LAND[s.name]||s.deg>=2;
+    return true;
+  });
+}
+function quizPrompt(){
+  const t=quiz.target;if(!t)return'';
+  const L=LAND[t.name];
+  if(L)return L[0]+' 「'+L[1]+'」の えきは どこかな？';
+  return '「'+(YOMI[t.name]||t.name)+'」は どこかな？';
+}
+function showQuizQ(){document.getElementById('quizQ').textContent=quizPrompt();}
+function updateQuizChips(){document.getElementById('quizScore').textContent='⭐ '+quiz.score;document.getElementById('quizStreak').textContent='れんぞく '+quiz.streak;}
+function setQuizMsg(t){document.getElementById('quizMsg').textContent=t;}
+function pickTarget(){
+  const pool=quizPool();let t,n=0;do{t=pool[Math.floor(Math.random()*pool.length)];n++;}while(t===quiz.target&&n<12);
+  quiz.target=t;quiz.misses=0;showQuizQ();updateQuizChips();setQuizMsg('');
+}
+function quizAnswer(sx,sy){
+  if(!quiz.target)return;
+  const[tx,ty]=w2s(quiz.target.wx,quiz.target.wy),d=Math.hypot(sx-tx,sy-ty),near=pickStation(sx,sy,40);
+  if(d<30||near===quiz.target){
+    quiz.score++;quiz.streak++;quiz.collected.add(quiz.target.name);
+    burst(tx,ty);beep(quiz.streak%5===0?'win':'ok');
+    setQuizMsg('⭕ せいかい！ すごい！');updateQuizChips();
+    setTimeout(()=>{pickTarget();scheduleDraw();},950);
+  }else{
+    quiz.misses++;quiz.streak=0;beep('ng');updateQuizChips();
+    if(quiz.misses>=2){setQuizMsg('ここだよ！ ⭐');flashSt=quiz.target;flashUntil=performance.now()+1500;burst(tx,ty);setTimeout(()=>{pickTarget();scheduleDraw();},1400);}
+    else{setQuizMsg('ちがうよ！ もういちど 🔍');}
+  }
+  scheduleDraw();
+}
+function startQuiz(){quiz.on=true;quiz.score=0;quiz.streak=0;document.body.classList.add('quizzing');document.getElementById('playBtn').style.display='none';document.getElementById('quizBar').classList.add('on');document.getElementById('tip').style.display='none';computeFit();pickTarget();scheduleDraw();}
+function stopQuiz(){quiz.on=false;document.body.classList.remove('quizzing');document.getElementById('playBtn').style.display='';document.getElementById('quizBar').classList.remove('on');scheduleDraw();}
+document.getElementById('playBtn').onclick=startQuiz;
+document.getElementById('quizClose').onclick=stopQuiz;
+document.getElementById('quizSkip').onclick=()=>{quiz.streak=0;updateQuizChips();pickTarget();scheduleDraw();};
+document.getElementById('quizMute').onclick=()=>{muted=!muted;document.getElementById('quizMute').textContent=muted?'🔇':'🔊';};
 
 window.addEventListener('resize',resize);
 window.addEventListener('load',resize);
